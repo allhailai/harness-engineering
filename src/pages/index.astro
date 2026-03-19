@@ -294,10 +294,25 @@ const failureLoopSteps = [
 
       <div class="prose">
         <p>
-          The solution was <code>docs/rules/</code> as the single source of truth. A script (<code
-            >scripts/sync-rules.sh</code
-          >) generates all the tool-specific rule files automatically. Git hooks regenerate them
-          whenever you pull or switch branches.
+          The solution was <code>docs/rules/</code> as the <strong>canonical source of truth for
+          autonomous agents</strong>. A script (<code>scripts/sync-rules.sh</code>) generates all
+          the tool-specific rule files automatically. Git hooks regenerate them whenever you pull
+          or switch branches.
+        </p>
+        <p>
+          <strong>For autonomous agents, <code>docs/rules/</code> is the only place that
+          matters.</strong> When an agent runs without a human in the loop &mdash; picking up a
+          plan, executing tasks overnight, or operating in a CI pipeline &mdash; it reads from
+          <code>docs/rules/</code> directly. That directory is the ground truth. Everything else
+          is derived from it.
+        </p>
+        <p>
+          Individual developers are a different story. When a developer is actively engaged in
+          building something &mdash; pairing with an agent in their editor, iterating on a feature,
+          reviewing output in real time &mdash; they can use whatever IDE or AI tool they prefer.
+          Cursor, VS Code with Copilot, Zed, Neovim with an AI plugin: the choice does not matter.
+          The sync script ensures that whichever tool they use, it reads the same rules generated
+          from the same canonical source. The IDE is irrelevant to the harness.
         </p>
         <p>
           Think of it like a database with one source &mdash; you edit one file, and all tools get
@@ -334,7 +349,9 @@ const failureLoopSteps = [
           frontmatter format. Roo expects them in <code>.roo/rules/*.md</code> with a different
           format. The sync script handles these transformations automatically. You never think about
           format differences &mdash; you just write the rule once in plain Markdown, and the script
-          does the rest.
+          does the rest. A developer switching from Cursor to a different editor does not need to
+          migrate or re-author any rules &mdash; they run the sync script once and their new tool
+          is fully configured.
         </p>
         <p>
           Git hooks ensure the sync runs automatically. A <code>post-merge</code> hook regenerates
