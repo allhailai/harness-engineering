@@ -236,6 +236,83 @@ const failureLoopSteps = [
         </p>
       </div>
 
+      <CodeBlock html={`<span class="cm"># AGENTS.md — Agent Orientation</span>
+<span class="cm"># Every agent session starts here. This is the table of contents for the codebase.</span>
+
+<span class="kw">## What This Project Is</span>
+
+Elixir/Phoenix umbrella app + React 19 TypeScript frontend.
+Healthcare care coordination platform (multi-tenant, org_id scoped).
+Currently one tenant (Firsthand); architecture supports adding more.
+
+<span class="kw">## Project Structure</span>
+
+<span class="fi">apps/core/</span>        <span class="cm">— Platform logic (shared across all tenants)</span>
+<span class="fi">apps/core_web/</span>    <span class="cm">— Core Phoenix API layer (/api/core/v1)</span>
+<span class="fi">apps/fh/</span>          <span class="cm">— Tenant: Firsthand business logic</span>
+<span class="fi">apps/fh_web/</span>      <span class="cm">— Tenant: Firsthand web layer (/api/fh/v1)</span>
+<span class="fi">frontend/</span>         <span class="cm">— React 19 + TanStack + Zustand + shadcn/ui</span>
+<span class="fi">docs/</span>             <span class="cm">— Business domain + architecture documentation</span>
+<span class="fi">Playbooks/</span>        <span class="cm">— Step-by-step implementation guides</span>
+<span class="fi">scripts/</span>          <span class="cm">— CI and maintenance scripts</span>
+
+<span class="kw">## Rules</span>  <span class="cm"># live in docs/rules/ as the single canonical source</span>
+
+<span class="fi">docs/rules/elixir.md</span>                 <span class="cm">— Backend (Elixir)</span>
+<span class="fi">docs/rules/ecto.md</span>                   <span class="cm">— Database (Ecto)</span>
+<span class="fi">docs/rules/migrations.md</span>             <span class="cm">— Migrations</span>
+<span class="fi">docs/rules/elixir-testing.md</span>         <span class="cm">— Backend Testing</span>
+<span class="fi">docs/rules/frontend-core.md</span>          <span class="cm">— Frontend (Core)</span>
+<span class="fi">docs/rules/frontend-architecture.md</span>  <span class="cm">— Frontend (Architecture)</span>
+<span class="fi">docs/rules/frontend-components.md</span>    <span class="cm">— Frontend (Components)</span>
+<span class="fi">docs/rules/frontend-data.md</span>          <span class="cm">— Frontend (Data)</span>
+<span class="fi">docs/rules/global.md</span>                 <span class="cm">— Global (all code)</span>
+<span class="fi">docs/rules/deployment.md</span>             <span class="cm">— Deployment</span>
+<span class="fi">docs/rules/review.md</span>                 <span class="cm">— Code Review</span>
+
+<span class="kw">## Key Commands</span>
+
+<span class="cm"># Backend</span>
+mix compile --warnings-as-errors --force   <span class="cm"># Check compilation</span>
+mix test                                    <span class="cm"># Run backend tests</span>
+mix test --failed                           <span class="cm"># Re-run only failures</span>
+mix credo --strict                          <span class="cm"># Elixir linting</span>
+mix reset_db                                <span class="cm"># Reset dev database</span>
+
+<span class="cm"># Frontend (run from frontend/ directory)</span>
+npm run verify                              <span class="cm"># lint + type-check + test + build</span>
+npm run test:unit                           <span class="cm"># Unit tests only</span>
+npm run lint                                <span class="cm"># ESLint</span>
+npm run type-check                          <span class="cm"># TypeScript check</span>
+
+<span class="cm"># Boundary enforcement</span>
+mix test apps/core/test/architecture/       <span class="cm"># Elixir core/tenant boundary</span>
+cd frontend &amp;&amp; npx vitest run tests/architecture/  <span class="cm"># Frontend boundary</span>
+
+<span class="kw">## Architecture Invariants</span>  <span class="cm"># enforced by CI</span>
+
+<span class="ar">1.</span> Core NEVER imports tenant  <span class="cm">— dependency flows: Core ← Tenant</span>
+<span class="ar">2.</span> All data scoped by org_id  <span class="cm">— every query filters by org_id</span>
+<span class="ar">3.</span> API envelope               <span class="cm">— responses wrapped in {data: ...}</span>
+<span class="ar">4.</span> Thin controllers           <span class="cm">— business logic in Context modules</span>
+<span class="ar">5.</span> Wrapper hooks only         <span class="cm">— useRequestQuery/useRequestMutation</span>
+<span class="ar">6.</span> React Compiler             <span class="cm">— 'use memo' directive, no manual useMemo</span>
+
+<span class="kw">## When You Make a Mistake</span>
+
+<span class="ar">1.</span> Fix the immediate issue
+<span class="ar">2.</span> Add a rule to <span class="fi">docs/rules/</span> and run <span class="fi">scripts/sync-rules.sh</span>
+<span class="ar">3.</span> Log it in <span class="fi">docs/failure-log.md</span> with date and prevention
+
+<span class="kw">## Autonomous Execution</span>
+
+<span class="ar">1.</span> Check <span class="fi">docs/plans/</span> for a Ready plan that covers the work
+<span class="ar">2.</span> Check <span class="fi">docs/quality/</span> for the quality grade of the area
+   <span class="cm">— Grade A/B: safe to build on</span>
+   <span class="cm">— Grade C: note issues, fix during related work</span>
+   <span class="cm">— Grade D: escalate to human before proceeding</span>
+<span class="ar">3.</span> Follow the handoff protocol in <span class="fi">docs/plans/README.md</span>`} />
+
       <CardGrid>
         <Card icon="🗺️" title="Project Structure" tag="AGENTS.md">
           Maps every important directory so the agent knows where things live without exploring
@@ -285,7 +362,7 @@ const failureLoopSteps = [
       <WhyBox>
         <p>
           Rules for how to write code existed in 4 different directories (<code>.cursor/rules/</code
-          >, <code>.agent/rules/</code>, <code>.roo/rules/</code>, <code>.gemini/</code>). Each AI
+          >, <code>.agent/rules/</code>). Each AI
           tool read from its own directory. Over time, these drifted apart &mdash; Cursor agents saw
           different rules than Roo agents. Updating a rule meant editing 4 files and hoping you did
           not miss one.
@@ -346,8 +423,7 @@ const failureLoopSteps = [
         </p>
         <p>
           For example, Cursor expects rules in <code>.cursor/rules/*.mdc</code> with a specific
-          frontmatter format. Roo expects them in <code>.roo/rules/*.md</code> with a different
-          format. The sync script handles these transformations automatically. You never think about
+          frontmatter format. The sync script handles these transformations automatically. You never think about
           format differences &mdash; you just write the rule once in plain Markdown, and the script
           does the rest. A developer switching from Cursor to a different editor does not need to
           migrate or re-author any rules &mdash; they run the sync script once and their new tool
@@ -403,8 +479,7 @@ const failureLoopSteps = [
 
 <span class="cm"># Generated automatically (never edit directly):</span>
 <span class="fi">.cursor/rules/elixir.mdc</span>      <span class="ar">← generated by sync-rules.sh</span>
-<span class="fi">.agent/rules/elixir.md</span>        <span class="ar">← generated by sync-rules.sh</span>
-<span class="fi">.roo/rules/elixir.md</span>          <span class="ar">← generated by sync-rules.sh</span>`} />
+<span class="fi">.agent/rules/elixir.md</span>        <span class="ar">← generated by sync-rules.sh</span>`} />
 
       <InsightBox>
         <p>
