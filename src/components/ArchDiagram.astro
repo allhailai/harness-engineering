@@ -1,0 +1,188 @@
+---
+// Architecture layer map diagram
+---
+
+<div class="arch-diagram">
+  <!-- Entry Point -->
+  <div class="arch-layer">
+    <div class="arch-layer-label">Entry Point &mdash; Every agent session starts here</div>
+    <div class="arch-nodes">
+      <div class="arch-node primary">📄 AGENTS.md</div>
+    </div>
+  </div>
+
+  <div class="arch-arrow">
+    <span class="arch-arrow-sym">↓</span>
+    <span class="arch-arrow-label">points to</span>
+  </div>
+
+  <!-- Knowledge Sources -->
+  <div class="arch-layer">
+    <div class="arch-layer-label">
+      Knowledge Sources &mdash; What agents read to understand the project
+    </div>
+    <div class="arch-nodes">
+      <div class="arch-node secondary">
+        📜 docs/rules/ &rarr; generates &rarr; .cursor/ .agent/ .roo/ .gemini/
+      </div>
+      <div class="arch-node secondary">📚 docs/ (architecture &amp; domain docs)</div>
+      <div class="arch-node secondary">📖 Playbooks/ (step-by-step guides)</div>
+    </div>
+  </div>
+
+  <div class="arch-section-divider"></div>
+
+  <!-- Deterministic Constraints -->
+  <div class="arch-layer">
+    <div class="arch-layer-label">
+      Deterministic Constraints &mdash; CI tests that make violations impossible to merge
+    </div>
+    <div class="arch-nodes">
+      <div class="arch-node tertiary">🧪 boundary_test.exs</div>
+      <div class="arch-node tertiary">🧪 api_envelope_test.exs</div>
+      <div class="arch-node tertiary">⚛️ imports.test.ts</div>
+    </div>
+  </div>
+
+  <div class="arch-section-divider"></div>
+
+  <!-- Failure Loop -->
+  <div class="arch-layer">
+    <div class="arch-layer-label">
+      Failure Loop &mdash; Continuous improvement from every mistake
+    </div>
+    <div class="arch-nodes">
+      <div class="arch-node amber">📝 docs/failure-log.md</div>
+      <div class="arch-node arch-node--label">
+        mistake &rarr; log &rarr; rule &rarr; sync &rarr; never again
+      </div>
+    </div>
+  </div>
+
+  <div class="arch-section-divider"></div>
+
+  <!-- Garbage Collection -->
+  <div class="arch-layer">
+    <div class="arch-layer-label">
+      Garbage Collection &mdash; Periodic maintenance to fight entropy
+    </div>
+    <div class="arch-nodes">
+      <div class="arch-node purple">📄 Doc freshness scan (weekly)</div>
+      <div class="arch-node purple">🏗️ Architecture drift detection (on PR)</div>
+      <div class="arch-node purple">📊 Rule coverage analysis (monthly)</div>
+    </div>
+  </div>
+
+  <div class="arch-section-divider"></div>
+
+  <!-- Autonomous Execution -->
+  <div class="arch-layer">
+    <div class="arch-layer-label">
+      Autonomous Execution &mdash; Agents pick up and complete work end-to-end
+    </div>
+    <div class="arch-nodes">
+      <div class="arch-node primary">📋 docs/plans/ (Ready &rarr; agent picks up)</div>
+      <div class="arch-node primary">📊 docs/quality/ (A/B/C/D grades)</div>
+      <div class="arch-node primary">🤝 Handoff protocol (mode transitions)</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .arch-diagram {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--card-shadow-lg);
+    margin-top: 32px;
+  }
+  .arch-layer {
+    margin-bottom: 20px;
+  }
+  .arch-layer:last-child {
+    margin-bottom: 0;
+  }
+  .arch-layer-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--content-muted);
+    margin-bottom: 10px;
+  }
+  .arch-nodes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .arch-node {
+    background: #f8fafc;
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--content-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .arch-node.primary {
+    background: linear-gradient(135deg, var(--accent-light), #dbeafe);
+    border-color: #93c5fd;
+    color: #1e40af;
+  }
+  .arch-node.secondary {
+    background: var(--teal-light);
+    border-color: #5eead4;
+    color: #0f766e;
+  }
+  .arch-node.tertiary {
+    background: var(--green-light);
+    border-color: #86efac;
+    color: #15803d;
+  }
+  .arch-node.amber {
+    background: var(--amber-light);
+    border-color: #fcd34d;
+    color: #92400e;
+  }
+  .arch-node.purple {
+    background: #f5f3ff;
+    border-color: #c4b5fd;
+    color: #6d28d9;
+  }
+  /* Inline label node (no box) */
+  .arch-node--label {
+    background: none;
+    border: none;
+    padding: 0 4px;
+    font-size: 12px;
+    color: var(--content-muted);
+    font-weight: 400;
+    white-space: normal;
+  }
+  .arch-arrow {
+    display: flex;
+    align-items: center;
+    padding: 6px 0 6px 16px;
+    gap: 8px;
+  }
+  .arch-arrow-sym {
+    font-size: 18px;
+    color: var(--accent);
+  }
+  .arch-arrow-label {
+    font-size: 11px;
+    color: var(--content-muted);
+    font-style: italic;
+  }
+  .arch-section-divider {
+    height: 1px;
+    background: var(--card-border);
+    margin: 24px 0;
+  }
+</style>

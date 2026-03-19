@@ -1,0 +1,38 @@
+---
+// Dark code block with syntax-highlight colour classes
+// Pass pre-formatted HTML string via the `html` prop.
+// Colour token classes: cm (comment) | kw (keyword) | st (string)
+//                       fi (filename) | hl (highlight) | ar (arrow)
+export interface Props {
+  html: string;
+}
+const { html } = Astro.props;
+---
+
+<div class="code-block">
+  <pre set:html={html} />
+</div>
+
+<style>
+  .code-block {
+    background: #0f172a;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .code-block pre {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  /* Colour token classes */
+  .code-block :global(.cm) { color: #64748b; }  /* comment  */
+  .code-block :global(.kw) { color: #38bdf8; }  /* keyword  */
+  .code-block :global(.st) { color: #86efac; }  /* string   */
+  .code-block :global(.fi) { color: #fbbf24; }  /* filename */
+  .code-block :global(.hl) { color: #a78bfa; }  /* highlight */
+  .code-block :global(.ar) { color: #f472b6; }  /* arrow    */
+</style>

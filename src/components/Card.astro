@@ -1,0 +1,58 @@
+---
+// Individual card component used inside <CardGrid>
+export interface Props {
+  icon: string;
+  title: string;
+  tag?: string;
+}
+
+const { icon, title, tag } = Astro.props;
+---
+
+<div class="card">
+  <div class="card-icon">{icon}</div>
+  <div class="card-title">{title}</div>
+  <div class="card-desc"><slot /></div>
+  {tag && <div class="card-tag">{tag}</div>}
+</div>
+
+<style>
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card:hover {
+    box-shadow: var(--card-shadow-lg);
+    transform: translateY(-1px);
+  }
+  .card-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--content-text);
+    margin-bottom: 6px;
+  }
+  .card-desc {
+    font-size: 13.5px;
+    color: var(--content-muted);
+    line-height: 1.55;
+  }
+  .card-tag {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+</style>

@@ -1,0 +1,912 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import PrincipleBanner from '../components/PrincipleBanner.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import WhyBox from '../components/WhyBox.astro';
+import InsightBox from '../components/InsightBox.astro';
+import CardGrid from '../components/CardGrid.astro';
+import Card from '../components/Card.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import Steps from '../components/Steps.astro';
+import ProgressOverview from '../components/ProgressOverview.astro';
+import ArchDiagram from '../components/ArchDiagram.astro';
+import Footer from '../components/Footer.astro';
+
+const failureLoopSteps = [
+  {
+    title: 'Agent makes a mistake',
+    desc: 'The agent produces incorrect code, violates a convention, or makes a wrong assumption. This is normal and expected.',
+  },
+  {
+    title: 'Fix the immediate issue',
+    desc: 'Correct the code. Do not just move on — this is the trigger for the improvement loop.',
+  },
+  {
+    title: 'Log it in docs/failure-log.md',
+    desc: 'Record what happened, why it happened, and what rule would prevent it. This builds institutional memory.',
+  },
+  {
+    title: 'Add or update a rule in docs/rules/',
+    desc: 'Write the rule that would have prevented the mistake. Be specific and prescriptive.',
+  },
+  {
+    title: 'Run scripts/sync-rules.sh',
+    desc: 'Propagate the new rule to all AI tools automatically. Every agent now knows the rule.',
+  },
+  {
+    title: 'That mistake never happens again',
+    desc: 'The rule is now part of the harness. Every future agent session starts with this knowledge already loaded.',
+  },
+];
+---
+
+<BaseLayout>
+  <Hero />
+  <PrincipleBanner />
+
+  <div class="content">
+
+    <!-- ── INTRO ──────────────────────────────────────────────────── -->
+    <section class="section" id="what-is-this">
+      <SectionHeader
+        label="What Is This?"
+        title="A system for making AI agents reliable"
+        subtitle="Harness Engineering is the practice of encoding everything an AI agent needs to know directly into the repository — so it can work autonomously without constant human guidance."
+      />
+
+      <div class="prose">
+        <p>
+          When you first start using AI coding agents, you probably chat with them: &ldquo;Hey,
+          can you add a button here?&rdquo; or &ldquo;Fix this bug.&rdquo; The agent helps, you
+          review, you move on. This works fine for small tasks.
+        </p>
+        <p>
+          But as projects grow, this approach breaks down. Every new agent session starts cold
+          &mdash; the agent has no memory of what you built yesterday, what rules you follow, or
+          what mistakes were made last week. You end up re-explaining the same things over and over.
+        </p>
+        <p>
+          <strong>Harness Engineering solves this.</strong> Instead of relying on conversation to
+          transfer knowledge, we encode that knowledge directly into the repository. The agent reads
+          the repo, understands the project, and can work autonomously &mdash; following the right
+          rules, avoiding known mistakes, and picking up tasks without hand-holding.
+        </p>
+      </div>
+
+      <ProgressOverview />
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── FIRST PRINCIPLES ──────────────────────────────────────── -->
+    <section class="section" id="first-principles">
+      <SectionHeader
+        label="First Principles"
+        title="Why harness engineering works"
+        subtitle="Three foundational insights that explain why encoding knowledge into the repository is the right model for AI-assisted development."
+      />
+
+      <div class="principles-list">
+
+        <div class="principle-card">
+          <div class="principle-number">01</div>
+          <div class="principle-body">
+            <h3 class="principle-title">The agent sees only the repository</h3>
+            <p>
+              This is the foundational insight everything else builds on. From the agent&rsquo;s point
+              of view, anything it can&rsquo;t access in-context while running effectively doesn&rsquo;t
+              exist. Knowledge that lives in Google Docs, chat threads, or people&rsquo;s heads is not
+              accessible to the system.
+            </p>
+            <p>
+              Think of it like onboarding a new hire who can never attend meetings, never use Slack,
+              and never ask a colleague a question. The only thing they can see is the git repository.
+              If the information isn&rsquo;t in the repo, it doesn&rsquo;t exist for the agent. That
+              Slack discussion where your team aligned on an architectural pattern? If it&rsquo;s not
+              discoverable to the agent, it might as well have never happened.
+            </p>
+            <p>
+              This flips the traditional engineering mindset. Normally, knowledge is distributed across
+              people, wikis, chat threads, and tribal memory. Harness engineering demands you externalize
+              everything into the repo itself &mdash; as versioned, machine-readable artifacts.
+            </p>
+          </div>
+        </div>
+
+        <div class="principle-card">
+          <div class="principle-number">02</div>
+          <div class="principle-body">
+            <h3 class="principle-title">The human&rsquo;s job changes</h3>
+            <p>
+              Throughout the development process, humans never directly contributed any code. This
+              became a core philosophy: no manually-written code. The lack of hands-on human coding
+              introduced a different kind of engineering work, focused on systems, scaffolding, and
+              leverage.
+            </p>
+            <p>
+              This is the paradigm shift. The engineer&rsquo;s job moves from writing code to three
+              new responsibilities: designing environments for agents to work in, specifying intent
+              clearly enough for agents to act on, and building feedback loops that catch mistakes
+              mechanically.
+            </p>
+            <p>
+              When something failed, the fix was almost never &ldquo;try harder.&rdquo; Because the
+              only way to make progress was to get the agent to do the work, human engineers always
+              stepped into the task and asked: &ldquo;what capability is missing, and how do we make
+              it both legible and enforceable for the agent?&rdquo;
+            </p>
+          </div>
+        </div>
+
+        <div class="principle-card">
+          <div class="principle-number">03</div>
+          <div class="principle-body">
+            <h3 class="principle-title">Constraints make agents better, not worse</h3>
+            <p>
+              This is counterintuitive but critical. Paradoxically, constraining the solution space
+              makes agents more productive, not less. You know this from your LLM experience &mdash; a
+              model given a vague prompt produces vague output. A model told &ldquo;respond only in
+              JSON with these exact fields&rdquo; produces more reliable output.
+            </p>
+            <p>
+              Harness engineering extends this principle to the entire working environment. Every rule,
+              every boundary test, every structured plan is a constraint that narrows the space of
+              possible actions &mdash; and in doing so, makes the agent&rsquo;s output more
+              predictable, more correct, and more useful.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── PHASE 1 ─────────────────────────────────────────────────── -->
+    <section class="section" id="phase1">
+      <SectionHeader
+        label="Phase 1"
+        title="The Map — AGENTS.md"
+        subtitle="Give every AI agent a complete orientation to the project in a single file it reads at the start of every session."
+        phase={1}
+        complete
+      />
+
+      <WhyBox>
+        <p>
+          Every AI agent session started completely cold &mdash; the agent had no idea what the
+          project was about, which directories mattered, or what rules to follow. A human had to
+          explain everything from scratch every single time. This was like hiring a new employee
+          every day and re-onboarding them from zero.
+        </p>
+      </WhyBox>
+
+      <div class="prose">
+        <p>
+          The solution was <code>AGENTS.md</code> at the project root &mdash; a ~100-line
+          &ldquo;table of contents&rdquo; for every AI agent. Think of it as the README that no
+          human reads but every agent <em>must</em> read. It covers everything the agent needs
+          to orient itself instantly:
+        </p>
+        <ul>
+          <li>What the project is and how it is structured</li>
+          <li>Where the rules live (so agents know what to follow)</li>
+          <li>Key commands to run (so agents do not guess)</li>
+          <li>Architecture rules that must never be broken</li>
+          <li>What to do when a mistake happens</li>
+          <li>Known technical debt (so agents do not accidentally make it worse)</li>
+        </ul>
+
+        <h4>Why a single file instead of scattered documentation?</h4>
+        <p>
+          AI agents work within a <strong>context window</strong> &mdash; a fixed amount of text
+          they can &ldquo;see&rdquo; at one time. Every file they open consumes part of that window.
+          If project knowledge is spread across dozens of files, the agent has to make choices about
+          what to read and what to skip. It will inevitably miss something important.
+        </p>
+        <p>
+          <code>AGENTS.md</code> solves this by compressing the most critical orientation into a
+          single file that fits entirely within one context window read. The agent doesn&rsquo;t
+          need to hunt for information &mdash; it gets the full map in one pass. From there, it
+          knows <em>where</em> to go for more detail (e.g., <code>docs/rules/</code> for coding
+          conventions, <code>docs/plans/</code> for feature specifications).
+        </p>
+
+        <h4>How to write an effective AGENTS.md</h4>
+        <p>
+          The key discipline is <strong>brevity with pointers</strong>. The file itself should not
+          contain full rule definitions or architecture specifications &mdash; those live in
+          dedicated files. Instead, <code>AGENTS.md</code> contains short summaries and file paths.
+          Think of it as a table of contents, not an encyclopedia.
+        </p>
+        <p>
+          A common mistake is letting <code>AGENTS.md</code> grow past 150 lines. When this happens,
+          the file starts competing with itself for attention in the context window. Ruthlessly prune
+          anything that can be a pointer instead of inline content. If a section takes more than 5
+          lines to explain, it belongs in its own file with a one-line reference from
+          <code>AGENTS.md</code>.
+        </p>
+        <p>
+          The best <code>AGENTS.md</code> files evolve organically. Start with the basics &mdash;
+          project purpose, directory layout, and key commands. Then, every time an agent makes a
+          mistake because it lacked context, ask: &ldquo;Would a one-line entry in AGENTS.md have
+          prevented this?&rdquo; If yes, add it. Over weeks, the file naturally converges on exactly
+          the information agents need most.
+        </p>
+      </div>
+
+      <CardGrid>
+        <Card icon="🗺️" title="Project Structure" tag="AGENTS.md">
+          Maps every important directory so the agent knows where things live without exploring
+          blindly.
+        </Card>
+        <Card icon="📜" title="Rules Index" tag="docs/rules/">
+          Points to <code>docs/rules/</code> so agents always know where authoritative coding rules
+          are stored.
+        </Card>
+        <Card icon="⚙️" title="Key Commands" tag="mix, npm">
+          Lists the exact commands to compile, test, lint, and reset the database &mdash; no
+          guessing required.
+        </Card>
+        <Card icon="🚫" title="Architecture Invariants" tag="CI enforced">
+          Documents the rules that must never be broken, like Core never importing from tenant
+          modules.
+        </Card>
+        <Card icon="📝" title="Failure Log Template" tag="docs/failure-log.md">
+          A template for logging agent mistakes so they seed the improvement loop in Phase 4.
+        </Card>
+        <Card icon="⚠️" title="Known Tech Debt" tag="boundary violations">
+          Documents existing boundary violations so agents do not accidentally make them worse.
+        </Card>
+      </CardGrid>
+
+      <InsightBox>
+        <p>
+          Keeping AGENTS.md under 120 lines means the entire file fits in one AI context window
+          read &mdash; the agent gets the full picture instantly. A longer file would get skimmed
+          or truncated. Brevity is a feature, not a limitation.
+        </p>
+      </InsightBox>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── PHASE 2 ─────────────────────────────────────────────────── -->
+    <section class="section" id="phase2">
+      <SectionHeader
+        label="Phase 2"
+        title="Consolidate Rules Authority"
+        subtitle="One source of truth for all coding rules, automatically distributed to every AI tool."
+        phase={2}
+        complete
+      />
+
+      <WhyBox>
+        <p>
+          Rules for how to write code existed in 4 different directories (<code>.cursor/rules/</code
+          >, <code>.agent/rules/</code>, <code>.roo/rules/</code>, <code>.gemini/</code>). Each AI
+          tool read from its own directory. Over time, these drifted apart &mdash; Cursor agents saw
+          different rules than Roo agents. Updating a rule meant editing 4 files and hoping you did
+          not miss one.
+        </p>
+      </WhyBox>
+
+      <div class="prose">
+        <p>
+          The solution was <code>docs/rules/</code> as the single source of truth. A script (<code
+            >scripts/sync-rules.sh</code
+          >) generates all the tool-specific rule files automatically. Git hooks regenerate them
+          whenever you pull or switch branches.
+        </p>
+        <p>
+          Think of it like a database with one source &mdash; you edit one file, and all tools get
+          the update automatically. It is impossible to have drift because the generated files are
+          never committed to git.
+        </p>
+
+        <h4>Why rules drift is so dangerous</h4>
+        <p>
+          When different AI tools see different rules, bugs become <em>invisible</em>. Imagine
+          Cursor follows the rule &ldquo;always use parameterized queries&rdquo; but Roo&rsquo;s
+          copy of that rule was accidentally deleted. Roo generates raw SQL. The code looks fine in
+          Roo&rsquo;s context. The developer trusts the agent. A SQL injection vulnerability ships
+          to production. The root cause wasn&rsquo;t the agent &mdash; it was rule drift between
+          tool configurations.
+        </p>
+        <p>
+          This scenario gets worse over time. Each tool accumulates small differences: a rule
+          phrased slightly differently here, a missing rule there, conflicting advice between two
+          tools. Eventually, the rules become unreliable across the board and developers stop
+          trusting any of them. Consolidation prevents this erosion of trust.
+        </p>
+
+        <h4>How the sync pipeline works</h4>
+        <p>
+          Each rule file in <code>docs/rules/</code> is a Markdown file with YAML frontmatter.
+          The frontmatter contains metadata like <code>scope</code> (which files the rule applies
+          to), <code>trigger</code> (when the AI tool should activate it), and <code>description</code>
+          (a one-line summary). The sync script reads these files and transforms them into the
+          format each AI tool expects.
+        </p>
+        <p>
+          For example, Cursor expects rules in <code>.cursor/rules/*.mdc</code> with a specific
+          frontmatter format. Roo expects them in <code>.roo/rules/*.md</code> with a different
+          format. The sync script handles these transformations automatically. You never think about
+          format differences &mdash; you just write the rule once in plain Markdown, and the script
+          does the rest.
+        </p>
+        <p>
+          Git hooks ensure the sync runs automatically. A <code>post-merge</code> hook regenerates
+          tool-specific files after every <code>git pull</code>. A <code>post-checkout</code> hook
+          does the same on branch switches. The generated files are listed in <code>.gitignore</code>
+          so they never pollute the repository &mdash; they exist only on each developer&rsquo;s
+          local machine, always freshly generated from the single source.
+        </p>
+
+        <h4>Writing effective rules</h4>
+        <p>
+          The best rules are <strong>specific, prescriptive, and testable</strong>. A vague rule
+          like &ldquo;write clean code&rdquo; gives an agent nothing actionable. A specific rule
+          like &ldquo;all Ecto queries must use <code>Repo.all/1</code> with explicit preloads;
+          never use lazy loading&rdquo; tells the agent exactly what to do and what to avoid.
+        </p>
+        <p>
+          Rules should also include <strong>examples</strong> where possible. AI agents learn
+          patterns from examples even more effectively than from abstract instructions. A rule that
+          says &ldquo;do X&rdquo; accompanied by a code snippet showing X is dramatically more
+          effective than the instruction alone.
+        </p>
+      </div>
+
+      <CardGrid>
+        <Card icon="📂" title="docs/rules/ (Source)" tag="source of truth">
+          The single canonical location for all coding rules. Edit here, and everything else updates
+          automatically.
+        </Card>
+        <Card icon="🔄" title="sync-rules.sh" tag="scripts/sync-rules.sh">
+          A script that reads <code>docs/rules/</code> and generates the correct format for each AI
+          tool automatically.
+        </Card>
+        <Card icon="🪝" title="Git Hooks" tag="auto-generated">
+          Automatically regenerate tool-specific rule files on every pull and branch switch &mdash;
+          zero manual steps.
+        </Card>
+        <Card icon="🏷️" title="Rule Metadata" tag="frontmatter">
+          Each rule file has scope and trigger metadata so tools know when to apply each rule
+          automatically.
+        </Card>
+      </CardGrid>
+
+      <CodeBlock html={`<span class="cm"># docs/rules/ is the only place you edit</span>
+<span class="fi">docs/rules/elixir.md</span>          <span class="cm"># Backend Elixir conventions</span>
+<span class="fi">docs/rules/ecto.md</span>            <span class="cm"># Database query patterns</span>
+<span class="fi">docs/rules/frontend-core.md</span>   <span class="cm"># React 19 patterns</span>
+<span class="fi">docs/rules/global.md</span>          <span class="cm"># Rules for ALL code</span>
+
+<span class="cm"># Generated automatically (never edit directly):</span>
+<span class="fi">.cursor/rules/elixir.mdc</span>      <span class="ar">← generated by sync-rules.sh</span>
+<span class="fi">.agent/rules/elixir.md</span>        <span class="ar">← generated by sync-rules.sh</span>
+<span class="fi">.roo/rules/elixir.md</span>          <span class="ar">← generated by sync-rules.sh</span>`} />
+
+      <InsightBox>
+        <p>
+          Rules are now like a database with one source &mdash; you edit one file, and all tools get
+          the update automatically. It is impossible to have drift because the generated files are
+          never committed to git. The sync script is the only path from source to output.
+        </p>
+      </InsightBox>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── PHASE 3 ─────────────────────────────────────────────────── -->
+    <section class="section" id="phase3">
+      <SectionHeader
+        label="Phase 3"
+        title="Deterministic Constraints"
+        subtitle="Turn architecture rules from documentation into automated tests that fail the build when violated."
+        phase={3}
+        complete
+      />
+
+      <WhyBox>
+        <p>
+          The architecture rules (like &ldquo;Core code must never import from the FH tenant
+          module&rdquo;) were documented but not enforced. An AI agent could violate them and nobody
+          would catch it until a human reviewer noticed. Review comments for the same structural
+          violations kept repeating.
+        </p>
+      </WhyBox>
+
+      <div class="prose">
+        <p>
+          The solution was automated tests that run in CI (Continuous Integration) and fail the
+          build if architecture rules are violated. These tests make violations
+          <em>mechanically impossible to merge</em> &mdash; no human review required.
+        </p>
+
+        <h4>The spectrum of enforcement</h4>
+        <p>
+          There&rsquo;s a hierarchy of how strongly a rule can be enforced, from weakest to strongest:
+        </p>
+        <ol>
+          <li><strong>Tribal knowledge</strong> &mdash; someone on the team knows the rule and mentions it in code review. Weakest because it depends on that person being available and reviewing every PR.</li>
+          <li><strong>Written documentation</strong> &mdash; the rule exists in a wiki, README, or <code>AGENTS.md</code>. Better, but agents can miss it or misinterpret it.</li>
+          <li><strong>AI tool rules</strong> (Phase 2) &mdash; the rule is loaded into the agent&rsquo;s context automatically. Much better, but the agent can still choose to violate it.</li>
+          <li><strong>Automated tests in CI</strong> (this phase) &mdash; the rule is checked mechanically on every commit. Strongest because violation physically prevents merging.</li>
+        </ol>
+        <p>
+          Phase 3 targets the top of this hierarchy. Not every rule needs a CI test &mdash; convention
+          preferences like &ldquo;prefer <code>const</code> over <code>let</code>&rdquo; are fine as
+          Phase 2 rules. But <strong>architecture invariants</strong> &mdash; the rules where violation
+          would cause structural damage to the codebase &mdash; must be at level 4. If it would take
+          days to untangle a violation, it deserves a deterministic test.
+        </p>
+
+        <h4>What makes a good boundary test</h4>
+        <p>
+          Boundary tests are different from unit tests. They don&rsquo;t test behavior &mdash; they
+          test <em>structure</em>. A boundary test scans source files (often using simple string
+          matching or AST parsing) and verifies that certain import patterns, module references, or
+          code structures do or do not exist.
+        </p>
+        <p>
+          For example, a boundary test for a multi-tenant application might scan every file in
+          <code>lib/core/</code> and assert that none of them contain <code>import</code> or
+          <code>alias</code> statements referencing <code>FH.</code> (the tenant-specific namespace).
+          This is a simple regex scan &mdash; not complex test infrastructure &mdash; but it
+          provides an ironclad guarantee that core code stays independent of tenant code.
+        </p>
+        <p>
+          The beauty of these tests is that they&rsquo;re <strong>cheap to write and expensive to
+          violate</strong>. A 20-line test script can enforce an architecture rule that would otherwise
+          require constant vigilance from human reviewers. And unlike human reviewers, the test never
+          gets tired, never misses a file, and never approves a violation because &ldquo;it&rsquo;s
+          just this once.&rdquo;
+        </p>
+
+        <h4>Beyond import boundaries</h4>
+        <p>
+          Boundary tests aren&rsquo;t limited to import checking. Common patterns include:
+          <strong>API envelope tests</strong> that verify every HTTP response wraps data in a
+          consistent structure; <strong>naming convention tests</strong> that ensure all database
+          migration files follow a specific naming pattern; and <strong>dependency direction tests</strong>
+          that verify the dependency graph flows in one direction (e.g., UI &rarr; API &rarr; DB,
+          never the reverse). Each of these is a structural invariant that, once violated, creates
+          compounding maintenance costs.
+        </p>
+      </div>
+
+      <CardGrid>
+        <Card icon="🧪" title="Elixir Boundary Test" tag="boundary_test.exs">
+          Scans all backend files to ensure Core modules never reference FH (tenant) modules. Fails
+          CI if violated.
+        </Card>
+        <Card icon="⚛️" title="Frontend Boundary Test" tag="imports.test.ts">
+          Scans all frontend files to ensure core UI never imports from tenant UI. Enforces the same
+          separation in TypeScript.
+        </Card>
+        <Card icon="📦" title="API Envelope Test" tag="api_envelope_test.exs">
+          Verifies all API responses are wrapped in the correct <code>{'{ data: ... }'}</code> format.
+          Catches structural regressions automatically.
+        </Card>
+      </CardGrid>
+
+      <InsightBox>
+        <p>
+          &ldquo;Mechanically impossible to merge&rdquo; is stronger than &ldquo;documented in a
+          rule.&rdquo; If the CI build fails, the violation cannot be merged &mdash; no human review
+          required. Documentation tells people what to do; tests enforce it whether they read the
+          docs or not.
+        </p>
+      </InsightBox>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── PHASE 4 ─────────────────────────────────────────────────── -->
+    <section class="section" id="phase4">
+      <SectionHeader
+        label="Phase 4"
+        title="The Failure Loop"
+        subtitle="Convert every agent mistake into a permanent rule that prevents that mistake from ever happening again."
+        phase={4}
+        complete
+      />
+
+      <WhyBox>
+        <p>
+          When an AI agent made a mistake, the fix was applied to the code but rarely to the rules
+          that would prevent the mistake from happening again. The same categories of errors kept
+          recurring because there was no systematic process to convert failures into permanent
+          prevention rules.
+        </p>
+      </WhyBox>
+
+      <div class="prose">
+        <p>
+          This concept was popularized by Mitchell Hashimoto (creator of Vagrant, Terraform, and
+          co-founder of HashiCorp) in his writing on AI-assisted development workflows. The insight
+          is deceptively simple: <strong>every agent mistake is a gift</strong>, but only if you have
+          a system to convert it into permanent prevention.
+        </p>
+
+        <h4>Why most teams never improve</h4>
+        <p>
+          Without a formal failure loop, the typical workflow is: agent makes mistake &rarr; human
+          fixes it &rarr; everyone moves on. The fix addresses the symptom but not the cause. Two
+          weeks later, the same mistake happens again &mdash; maybe in a different file, maybe by a
+          different agent, maybe by the same agent that has no memory of the previous session. The
+          team feels like they&rsquo;re running on a treadmill.
+        </p>
+        <p>
+          The failure loop breaks this cycle by adding two steps between &ldquo;fix it&rdquo; and
+          &ldquo;move on&rdquo;: <strong>log it</strong> and <strong>write a rule</strong>. These
+          two steps transform a one-time fix into a permanent improvement. The failure log provides
+          the audit trail; the rule provides the prevention.
+        </p>
+
+        <h4>The anatomy of a good failure log entry</h4>
+        <p>
+          A failure log entry in <code>docs/failure-log.md</code> should capture four things:
+          <strong>what happened</strong> (the observable mistake), <strong>why it happened</strong>
+          (the missing context or wrong assumption), <strong>what rule would prevent it</strong>
+          (the specific, prescriptive instruction), and <strong>where the rule was added</strong>
+          (the file path in <code>docs/rules/</code>). This format makes the log both a diagnostic
+          record and a traceability chain from failure to prevention.
+        </p>
+        <p>
+          Over time, the failure log becomes a fascinating artifact. You can read it chronologically
+          and watch the harness mature. Early entries tend to be basic (&ldquo;agent didn&rsquo;t
+          know which test command to run&rdquo;). Later entries get more sophisticated
+          (&ldquo;agent correctly followed the API pattern but missed a subtle edge case in the
+          tenant isolation boundary&rdquo;). The progression reveals how the harness is shifting
+          the agent&rsquo;s failure mode from &ldquo;basic confusion&rdquo; to &ldquo;subtle edge
+          cases&rdquo; &mdash; exactly the trajectory you want.
+        </p>
+
+        <h4>Common failure categories</h4>
+        <p>
+          Most agent failures fall into recognizable categories. <strong>Missing context</strong>
+          means the agent didn&rsquo;t know something it needed to (fix: add to AGENTS.md or rules).
+          <strong>Wrong assumptions</strong> means the agent guessed instead of checking (fix:
+          add explicit instructions). <strong>Convention violations</strong> mean the agent wrote
+          working code that doesn&rsquo;t match project style (fix: add or clarify a rule).
+          <strong>Boundary violations</strong> mean the agent crossed an architecture line (fix:
+          add a Phase 3 test). Categorizing failures helps you see which phases of the harness
+          need strengthening.
+        </p>
+      </div>
+
+      <Steps steps={failureLoopSteps} />
+
+      <div class="tag-list">
+        <span class="tag amber">Missing context</span>
+        <span class="tag amber">Wrong assumptions</span>
+        <span class="tag amber">Convention violations</span>
+        <span class="tag amber">Boundary violations</span>
+        <span class="tag amber">Redundant code</span>
+        <span class="tag amber">Tool misuse</span>
+      </div>
+
+      <InsightBox>
+        <p>
+          The failure log is the history; the rules are the accumulated knowledge. Every mistake is
+          an investment in the system getting smarter. A team that runs this loop for six months has
+          a dramatically more capable agent harness than one that does not &mdash; because every
+          mistake has been converted into prevention.
+        </p>
+      </InsightBox>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── PHASE 5 ─────────────────────────────────────────────────── -->
+    <section class="section" id="phase5">
+      <SectionHeader
+        label="Phase 5"
+        title="Garbage Collection"
+        subtitle="Fight entropy. Keep the harness accurate as the codebase evolves."
+        phase={5}
+        complete
+      />
+
+      <WhyBox>
+        <p>
+          Documentation, rules, and architecture assertions rot over time. Code changes &mdash;
+          files move, modules rename, features are deprecated &mdash; but the docs that reference
+          them do not automatically update. Agents reading stale documentation produce wrong code.
+          Without active maintenance, the harness itself becomes a source of confusion.
+        </p>
+      </WhyBox>
+
+      <div class="prose">
+        <p>
+          Every system degrades without maintenance, and a harness is no exception. The term
+          &ldquo;garbage collection&rdquo; is borrowed from programming language runtimes, where
+          a GC process automatically reclaims memory that&rsquo;s no longer in use. In harness
+          engineering, the &ldquo;garbage&rdquo; is stale documentation, outdated rules, and
+          boundary tests that no longer match reality.
+        </p>
+
+        <h4>Why stale docs are worse than no docs</h4>
+        <p>
+          When an agent reads documentation that references a file path that no longer exists, or
+          a module that was renamed three sprints ago, it doesn&rsquo;t just fail to find the
+          information &mdash; it actively generates <em>wrong</em> code based on the stale
+          reference. It might create a new file at the old path, import a non-existent module, or
+          follow a pattern that was deprecated. Stale documentation is worse than missing documentation
+          because it gives the agent <em>confident but incorrect</em> instructions.
+        </p>
+        <p>
+          This is particularly insidious because the mistakes are hard to catch. The agent produced
+          code that looks reasonable &mdash; it followed the documented pattern &mdash; but the
+          pattern is outdated. A human reviewer who isn&rsquo;t intimately familiar with the recent
+          refactor might approve it. The bug only surfaces weeks later, far from its root cause.
+        </p>
+
+        <h4>The three garbage collection agents</h4>
+        <p>
+          Three complementary processes fight entropy at different timescales and different layers
+          of the harness:
+        </p>
+      </div>
+
+      <CardGrid>
+        <Card icon="📄" title="Doc Freshness Agent" tag="check-doc-freshness.sh">
+          A script that checks every file path referenced in documentation actually exists. Runs
+          weekly in CI and on any PR that touches docs. Catches stale references before agents read
+          them.
+        </Card>
+        <Card icon="🏗️" title="Architecture Drift Agent" tag="drift detection">
+          Checks that the actual codebase structure matches what is documented and tested. Verifies
+          boundary tests are still comprehensive as the codebase grows.
+        </Card>
+        <Card icon="📊" title="Rule Coverage Agent" tag="monthly review">
+          Monthly review that analyzes PR review comments for repeated patterns. If reviewers keep
+          saying the same thing, it should become a rule.
+        </Card>
+      </CardGrid>
+
+      <div class="prose" style="margin-top: 24px">
+        <h4>When to run each agent</h4>
+        <p>
+          <strong>Doc freshness</strong> should run on every PR that touches documentation and
+          on a weekly CI schedule. This catches staleness quickly. <strong>Architecture drift</strong>
+          should run when new modules or directories are added &mdash; specifically, when the
+          structure of the project changes in ways that might invalidate boundary tests.
+          <strong>Rule coverage</strong> is a monthly human-initiated review because it requires
+          judgment: reading PR comments, identifying patterns, and deciding what rises to the level
+          of a formal rule.
+        </p>
+        <p>
+          The cadence matters. Run garbage collection too rarely and you accumulate debt that
+          eventually makes the harness untrustworthy. Run it too aggressively and you spend more
+          time maintaining the harness than building features. Weekly doc checks, per-PR drift
+          validation, and monthly rule reviews strike a practical balance for most teams.
+        </p>
+      </div>
+
+      <InsightBox>
+        <p>
+          The harness is only as good as its maintenance. Garbage collection prevents the system
+          from degrading back into chaos over time. A harness without GC is like a garden without
+          weeding &mdash; it looks fine at first, then slowly becomes unusable as stale information
+          misleads agents. The goal is not perfection &mdash; it&rsquo;s preventing the slow decay
+          that makes agents unreliable.
+        </p>
+      </InsightBox>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── PHASE 6 ─────────────────────────────────────────────────── -->
+    <section class="section" id="phase6">
+      <SectionHeader
+        label="Phase 6"
+        title="Autonomous Execution"
+        subtitle="Enable agents to pick up and complete work end-to-end without human decomposition or hand-holding."
+        phase={6}
+        complete
+      />
+
+      <WhyBox>
+        <p>
+          Even with all the previous phases, agents still needed humans to decompose work into
+          tasks, explain what to build, and hand off between different agent modes. The goal was to
+          move from &ldquo;agent helps with coding&rdquo; to &ldquo;agent picks up and completes
+          work autonomously.&rdquo;
+        </p>
+      </WhyBox>
+
+      <div class="prose">
+        <p>
+          Phases 1&ndash;5 create the <em>environment</em> for reliable agent work. Phase 6 creates
+          the <em>workflow</em>. The distinction matters: a well-configured environment means agents
+          make fewer mistakes, but agents still need someone to tell them <em>what</em> to build
+          and <em>in what order</em>. Phase 6 encodes that orchestration into the repository so
+          agents can operate with true autonomy.
+        </p>
+
+        <h4>Execution plans: the missing link</h4>
+        <p>
+          Most teams use AI agents by giving them ad-hoc instructions: &ldquo;implement user
+          authentication&rdquo; or &ldquo;add a dashboard page.&rdquo; This forces the agent to
+          simultaneously figure out <em>what</em> to build, <em>how</em> to decompose it, and
+          <em>in what order</em> to do the work. Agents are reasonably good at each of these
+          individually, but the combination produces unreliable results &mdash; they might build
+          components in the wrong order, skip dependencies, or misunderstand scope.
+        </p>
+        <p>
+          Execution plans solve this by separating <strong>planning</strong> from
+          <strong>execution</strong>. A human (or an architect-mode agent) creates a structured
+          plan in <code>docs/plans/</code> that decomposes a feature into ordered tasks, each
+          with clear acceptance criteria and dependencies. A code-mode agent then picks up the
+          plan and executes it step by step. The agent&rsquo;s cognitive load drops dramatically
+          because it only needs to focus on one thing: implementing the current task correctly.
+        </p>
+
+        <h4>Quality grades: knowing where to be careful</h4>
+        <p>
+          Not all code is equally trustworthy. Some areas have comprehensive tests, clean
+          architecture, and well-documented patterns &mdash; an agent can build on them confidently.
+          Other areas are fragile: missing tests, inconsistent patterns, known tech debt. An agent
+          that doesn&rsquo;t know the difference will treat all code as equally reliable, leading to
+          cascading failures when it builds on a shaky foundation.
+        </p>
+        <p>
+          Quality grades in <code>docs/quality/</code> make this knowledge explicit. Each area of
+          the codebase gets a grade from A (rock-solid) to D (fragile/needs rewrite). When an agent
+          encounters a Grade D area, it knows to either escalate to a human, proceed with extreme
+          caution, or avoid building new features on top of that code. This simple metadata prevents
+          the most expensive category of agent failures: working code built on broken foundations.
+        </p>
+
+        <h4>Handoff protocols: preserving context across modes</h4>
+        <p>
+          Complex features often require multiple agent &ldquo;modes&rdquo; &mdash; an architect
+          mode to design the approach, a code mode to implement it, and a debug mode to fix issues.
+          Without a handoff protocol, context is lost at each transition. The code agent doesn&rsquo;t
+          know what tradeoffs the architect considered. The debug agent doesn&rsquo;t know what the
+          code agent was trying to accomplish.
+        </p>
+        <p>
+          A handoff protocol is a structured format that captures: what was done, what decisions
+          were made (and why), what remains to be done, and any known risks or open questions. Each
+          agent writes a handoff note when it finishes, and the next agent reads it before starting.
+          This creates a continuous chain of context that survives mode transitions &mdash; no
+          information is lost in the handoff.
+        </p>
+      </div>
+
+      <CardGrid>
+        <Card icon="📋" title="Execution Plans" tag="docs/plans/">
+          Structured documents in <code>docs/plans/</code> that decompose features into ordered
+          tasks with clear acceptance criteria. Agents read a plan and execute it end-to-end without
+          human decomposition.
+        </Card>
+        <Card icon="📊" title="Quality Grades" tag="docs/quality/">
+          Per-area quality grades (A/B/C/D) in <code>docs/quality/</code> that tell agents where
+          the code is solid (safe to build on) and where it is fragile (needs care or escalation).
+        </Card>
+        <Card icon="🤝" title="Handoff Protocol" tag="handoff format">
+          A standard format for handing work between different agent modes (Architect &rarr; Code
+          &rarr; Debug) so context is never lost between transitions.
+        </Card>
+      </CardGrid>
+
+      <div class="prose" style="margin-top: 24px">
+        <h4>The plan lifecycle</h4>
+        <p>
+          Plans move through two states: <code>Draft</code> and <code>Ready</code>. A
+          <code>Draft</code> plan is a work-in-progress &mdash; it may have incomplete task
+          definitions, unresolved questions, or missing acceptance criteria. Agents should not
+          pick up Draft plans because the ambiguity leads to wasted effort and wrong assumptions.
+        </p>
+        <p>
+          A <code>Ready</code> plan has been reviewed by a human and is fully specified: every
+          task has clear acceptance criteria, dependencies are ordered correctly, and scope is
+          well-defined. Agents can pick up Ready plans and execute them autonomously with high
+          confidence. This two-state system gives humans a clear control mechanism &mdash; promote
+          a plan to Ready when you&rsquo;re confident it&rsquo;s correct, and agents will take it
+          from there.
+        </p>
+        <p>
+          This separation also creates a natural workflow for teams: product managers or tech leads
+          can queue up Draft plans throughout the week, refine them during planning sessions, and
+          promote them to Ready. Agents automatically pick up Ready plans, execute them, and submit
+          PRs &mdash; creating a pipeline of continuous autonomous delivery.
+        </p>
+      </div>
+
+      <InsightBox>
+        <p>
+          Plans in <code>Ready</code> state can be picked up by agents autonomously. Plans in
+          <code>Draft</code> state need human review first. Quality grades tell agents whether to
+          proceed confidently or escalate to a human. Together, these give you autonomous execution
+          with human oversight exactly where it matters.
+        </p>
+      </InsightBox>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ── ARCHITECTURE DIAGRAM ───────────────────────────────────── -->
+    <section class="section" id="architecture">
+      <SectionHeader
+        label="System Overview"
+        title="The Harness Layer Map"
+        subtitle="How all six phases connect into a single, self-reinforcing system that makes agents more reliable over time."
+      />
+      <ArchDiagram />
+    </section>
+
+  </div>
+  <!-- /content -->
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .content {
+    padding: 0 64px 80px;
+  }
+  .section {
+    padding-top: 64px;
+  }
+
+  /* ── First Principles ─────────────────────────────────────────── */
+  .principles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .principle-card {
+    display: flex;
+    gap: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    box-shadow: var(--card-shadow);
+  }
+
+  .principle-number {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.25;
+    line-height: 1;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    min-width: 52px;
+  }
+
+  .principle-body {
+    flex: 1;
+  }
+
+  .principle-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--content-text);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+
+  .principle-body p {
+    font-size: 15px;
+    color: #334155;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  .principle-body p:last-child {
+    margin-bottom: 0;
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+// Mobile top bar with hamburger menu
+---
+
+<div class="mobile-header">
+  <button class="hamburger" id="hamburger" aria-label="Open navigation" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <span class="mobile-title">Harness Engineering</span>
+</div>
+
+<style>
+  .mobile-header {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--sidebar-border);
+    z-index: 200;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+  }
+  .hamburger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #94a3b8;
+    border-radius: 2px;
+  }
+  .mobile-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  @media (max-width: 900px) {
+    .mobile-header {
+      display: flex;
+    }
+  }
+</style>

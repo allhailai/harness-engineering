@@ -1,0 +1,183 @@
+---
+// Sidebar navigation component
+---
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🤖</div>
+      <div class="sidebar-logo-text">Harness<br />Engineering</div>
+    </div>
+    <div class="sidebar-tagline">Teaching AI agents to work autonomously</div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a href="#overview" class="nav-link active">
+      <span class="phase-num">★</span> Introduction
+    </a>
+    <a href="#first-principles" class="nav-link">
+      <span class="phase-num">💡</span> First Principles
+    </a>
+    <a href="#architecture" class="nav-link">
+      <span class="phase-num">⬡</span> Architecture Map
+    </a>
+
+    <div class="nav-section-label" style="margin-top: 8px">The 6 Phases</div>
+    <a href="#phase1" class="nav-link">
+      <span class="phase-num">1</span> The Map (AGENTS.md)
+      <span class="check">✓</span>
+    </a>
+    <a href="#phase2" class="nav-link">
+      <span class="phase-num">2</span> Rules Authority
+      <span class="check">✓</span>
+    </a>
+    <a href="#phase3" class="nav-link">
+      <span class="phase-num">3</span> Deterministic Constraints
+      <span class="check">✓</span>
+    </a>
+    <a href="#phase4" class="nav-link">
+      <span class="phase-num">4</span> The Failure Loop
+      <span class="check">✓</span>
+    </a>
+    <a href="#phase5" class="nav-link">
+      <span class="phase-num">5</span> Garbage Collection
+      <span class="check">✓</span>
+    </a>
+    <a href="#phase6" class="nav-link">
+      <span class="phase-num">6</span> Autonomous Execution
+      <span class="check">✓</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    All 6 phases complete.<br />
+    <a href="../plans/harness-engineering/">View execution plans →</a>
+  </div>
+</nav>
+
+<style>
+  .sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--sidebar-border);
+  }
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .sidebar-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--teal));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .sidebar-logo-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f1f5f9;
+    line-height: 1.3;
+  }
+  .sidebar-tagline {
+    font-size: 11.5px;
+    color: var(--sidebar-text);
+    font-style: italic;
+    line-height: 1.4;
+  }
+  .sidebar-nav {
+    padding: 16px 0;
+    flex: 1;
+  }
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #475569;
+    padding: 12px 24px 6px;
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 24px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 13.5px;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .nav-link:hover {
+    background: var(--sidebar-hover);
+    color: #e2e8f0;
+  }
+  .nav-link.active {
+    background: rgba(56, 189, 248, 0.08);
+    color: var(--sidebar-active);
+    border-left-color: var(--sidebar-active);
+    font-weight: 500;
+  }
+  .nav-link .phase-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    flex-shrink: 0;
+  }
+  .nav-link.active .phase-num {
+    background: rgba(56, 189, 248, 0.2);
+    color: var(--sidebar-active);
+  }
+  .nav-link .check {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--green);
+  }
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--sidebar-border);
+    font-size: 11px;
+    color: #475569;
+    line-height: 1.5;
+  }
+  .sidebar-footer a {
+    color: var(--sidebar-active);
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.25s;
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+  }
+</style>

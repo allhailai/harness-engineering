@@ -1,0 +1,36 @@
+---
+// Core principle banner displayed below the hero
+---
+
+<div class="principle-banner">
+  <div class="principle-banner-icon">💡</div>
+  <div class="principle-banner-text">
+    <strong>Core Principle:</strong> The agent sees only the repository. Everything not accessible
+    in-context effectively does not exist. This plan encodes knowledge into the repo so agents can
+    operate autonomously.
+  </div>
+</div>
+
+<style>
+  .principle-banner {
+    background: linear-gradient(90deg, var(--accent-light), var(--teal-light));
+    border-bottom: 1px solid #bae6fd;
+    padding: 18px 64px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .principle-banner-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .principle-banner-text {
+    font-size: 14px;
+    color: #0c4a6e;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .principle-banner-text strong {
+    font-weight: 700;
+  }
+</style>

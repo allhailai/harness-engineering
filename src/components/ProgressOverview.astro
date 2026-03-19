@@ -1,0 +1,108 @@
+---
+// Progress tracker showing all 6 phases complete
+const phases = [
+  { num: 1, label: 'The Map' },
+  { num: 2, label: 'Rules Authority' },
+  { num: 3, label: 'Constraints' },
+  { num: 4, label: 'Failure Loop' },
+  { num: 5, label: 'Garbage Collection' },
+  { num: 6, label: 'Autonomous Exec' },
+];
+---
+
+<div class="progress-overview">
+  <div class="progress-title">Transformation Progress &mdash; All 6 Phases Complete</div>
+  <div class="progress-phases">
+    {phases.map((p) => (
+      <div class="progress-phase">
+        <div class="progress-phase-dot">{p.num}</div>
+        <div class="progress-phase-label">{p.label}</div>
+      </div>
+    ))}
+  </div>
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill"></div>
+  </div>
+  <div class="progress-label">6 / 6 phases complete</div>
+</div>
+
+<style>
+  .progress-overview {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 32px 40px;
+    margin: 40px 0 0;
+    box-shadow: var(--card-shadow);
+  }
+  .progress-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--content-muted);
+    margin-bottom: 24px;
+  }
+  .progress-phases {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    position: relative;
+  }
+  .progress-phases::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    height: 2px;
+    background: var(--green);
+    z-index: 0;
+  }
+  .progress-phase {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .progress-phase-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    font-weight: 700;
+    border: 3px solid var(--card-bg);
+  }
+  .progress-phase-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--content-muted);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .progress-bar-track {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 100px;
+    margin: 24px 0 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--green), var(--teal));
+    border-radius: 100px;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--content-muted);
+    text-align: right;
+  }
+</style>

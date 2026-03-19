@@ -1,0 +1,16 @@
+---
+// Responsive card grid wrapper — place <Card> components inside
+---
+
+<div class="card-grid">
+  <slot />
+</div>
+
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+// Blue "Key Insight" callout box
+---
+
+<div class="insight-box">
+  <div class="insight-box-header">💡 Key Insight</div>
+  <slot />
+</div>
+
+<style>
+  .insight-box {
+    background: linear-gradient(135deg, var(--accent-light), #dbeafe);
+    border: 1px solid #bae6fd;
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-top: 24px;
+  }
+  .insight-box-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #0369a1;
+    margin-bottom: 10px;
+  }
+  /* Prose inside the box */
+  .insight-box :global(p) {
+    font-size: 14.5px;
+    color: #0c4a6e;
+    line-height: 1.65;
+    font-weight: 500;
+  }
+</style>

@@ -1,0 +1,36 @@
+---
+// Amber "Why This Was Built" callout box
+---
+
+<div class="why-box">
+  <div class="why-box-header">🤔 Why This Was Built</div>
+  <slot />
+</div>
+
+<style>
+  .why-box {
+    background: linear-gradient(135deg, #fffbeb, #fef9c3);
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .why-box-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #92400e;
+    margin-bottom: 10px;
+  }
+  /* Prose inside the box */
+  .why-box :global(p) {
+    font-size: 14.5px;
+    color: #78350f;
+    line-height: 1.65;
+  }
+</style>
