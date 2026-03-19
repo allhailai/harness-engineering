@@ -237,7 +237,8 @@ const failureLoopSteps = [
       </div>
 
       <CodeBlock html={`<span class="cm"># AGENTS.md — Agent Orientation</span>
-<span class="cm"># Every agent session starts here. This is the table of contents for the codebase.</span>
+
+<span class="cm">&gt; Every agent session starts here. This is the table of contents for the codebase.</span>
 
 <span class="kw">## What This Project Is</span>
 
@@ -245,13 +246,17 @@ Elixir/Phoenix umbrella app + React 19 TypeScript frontend.
 Healthcare care coordination platform (multi-tenant, org_id scoped).
 Currently one tenant (Firsthand); architecture supports adding more.
 
+Full context: <span class="fi">docs/README.md</span>
+
 <span class="kw">## Project Structure</span>
 
 <span class="fi">apps/core/</span>        <span class="cm">— Platform logic (shared across all tenants)</span>
 <span class="fi">apps/core_web/</span>    <span class="cm">— Core Phoenix API layer (/api/core/v1)</span>
 <span class="fi">apps/fh/</span>          <span class="cm">— Tenant: Firsthand business logic</span>
-<span class="fi">apps/fh_web/</span>      <span class="cm">— Tenant: Firsthand web layer (/api/fh/v1)</span>
+<span class="fi">apps/fh/</span>          <span class="cm">— Tenant: Firsthand web layer (/api/fh/v1)</span>
 <span class="fi">frontend/</span>         <span class="cm">— React 19 + TanStack + Zustand + shadcn/ui</span>
+  <span class="fi">src/apps/core/</span>  <span class="cm">— Platform frontend (shared)</span>
+  <span class="fi">src/apps/company/</span> <span class="cm">— Tenant frontend (Firsthand)</span>
 <span class="fi">docs/</span>             <span class="cm">— Business domain + architecture documentation</span>
 <span class="fi">Playbooks/</span>        <span class="cm">— Step-by-step implementation guides</span>
 <span class="fi">scripts/</span>          <span class="cm">— CI and maintenance scripts</span>
@@ -272,22 +277,28 @@ Currently one tenant (Firsthand); architecture supports adding more.
 
 <span class="kw">## Key Commands</span>
 
+<span class="cm">&gt; All commands required before any PR is considered ready.</span>
+
 <span class="cm"># Backend</span>
 mix compile --warnings-as-errors --force   <span class="cm"># Check compilation</span>
+mix format                                  <span class="cm"># Elixir code formatting</span>
 mix test                                    <span class="cm"># Run backend tests</span>
 mix test --failed                           <span class="cm"># Re-run only failures</span>
 mix credo --strict                          <span class="cm"># Elixir linting</span>
 mix reset_db                                <span class="cm"># Reset dev database</span>
+mix reset_db_test                           <span class="cm"># Reset test database</span>
 
 <span class="cm"># Frontend (run from frontend/ directory)</span>
 npm run verify                              <span class="cm"># lint + type-check + test + build</span>
 npm run test:unit                           <span class="cm"># Unit tests only</span>
 npm run lint                                <span class="cm"># ESLint</span>
 npm run type-check                          <span class="cm"># TypeScript check</span>
+npm run format                              <span class="cm"># Prettier formatting (all files)</span>
+npm run format:check                        <span class="cm"># Prettier format check (CI-safe, no writes)</span>
 
 <span class="cm"># Boundary enforcement</span>
-mix test apps/core/test/architecture/       <span class="cm"># Elixir core/tenant boundary</span>
-cd frontend &amp;&amp; npx vitest run tests/architecture/  <span class="cm"># Frontend boundary</span>
+mix test apps/core/test/architecture/       <span class="cm"># Elixir core/tenant boundary (ExUnit)</span>
+cd frontend &amp;&amp; npx vitest run tests/architecture/  <span class="cm"># Frontend core/tenant boundary (Vitest)</span>
 
 <span class="kw">## Architecture Invariants</span>  <span class="cm"># enforced by CI</span>
 
@@ -311,7 +322,24 @@ cd frontend &amp;&amp; npx vitest run tests/architecture/  <span class="cm"># Fr
    <span class="cm">— Grade A/B: safe to build on</span>
    <span class="cm">— Grade C: note issues, fix during related work</span>
    <span class="cm">— Grade D: escalate to human before proceeding</span>
-<span class="ar">3.</span> Follow the handoff protocol in <span class="fi">docs/plans/README.md</span>`} />
+<span class="ar">3.</span> Follow the handoff protocol in <span class="fi">docs/plans/README.md</span>
+
+<span class="kw">## Documentation</span>
+
+<span class="fi">docs/README.md</span>               <span class="cm">— Documentation index (start here for deep context)</span>
+<span class="fi">docs/core/</span>                   <span class="cm">— Platform concepts (architecture, workflows, teams)</span>
+<span class="fi">docs/tenant/</span>                 <span class="cm">— Firsthand business domain (care pathways, terminology)</span>
+<span class="fi">docs/core/architecture.md</span>   <span class="cm">— Extension mechanisms, multi-tenancy</span>
+<span class="fi">docs/plans/</span>                  <span class="cm">— Execution plans for autonomous agent work</span>
+<span class="fi">docs/quality/</span>                <span class="cm">— Per-area quality grades (check before building)</span>
+
+<span class="kw">## Known Boundary Violations (tech debt)</span>
+
+<span class="cm"># Frontend: Core importing from Company (4 files)</span>
+<span class="fi">core/modules/workspace/pages/MyQueuesPage/useMyQueuesProvider.ts</span>        <span class="cm">→ useFhWorkflowTasksQuery</span>
+<span class="fi">core/modules/workspace/hooks/useTaskActions.ts</span>                           <span class="cm">→ useClaimEscalationMutation</span>
+<span class="fi">core/shared/core-components/features/Scheduling/hooks/useVisitForm.ts</span>    <span class="cm">→ useUpdateVisitMutation</span>
+<span class="fi">core/modules/patients/views/PatientAppointmentsView/usePatientAppointmentsViewProvider.ts</span>  <span class="cm">→ useAppointmentScheduleProvider</span>`} />
 
       <CardGrid>
         <Card icon="🗺️" title="Project Structure" tag="AGENTS.md">
